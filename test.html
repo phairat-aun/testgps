@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+    <div class="text-center p-8 bg-white rounded-lg shadow-lg">
+        <h1 id="status" class="text-2xl font-bold mb-4">กำลังเตรียมพร้อม...</h1>
+        <p id="message" class="text-gray-600 mb-6">กรุณารอสักครู่</p>
+        <button id="test-btn" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 disabled:bg-gray-400" disabled>
+            ทดสอบดึงตำแหน่งที่ตั้ง
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const statusEl = document.getElementById('status');
+            const messageEl = document.getElementById('message');
+            const testBtn = document.getElementById('test-btn');
+
+            try {
+                // --- ใช้ LIFF ID ของคุณ ---
+                await liff.init({ liffId: "2007930661-Meaz8v4l" });
+
+                if (!liff.isInClient()) {
+                    statusEl.textContent = "เกิดข้อผิดพลาด";
+                    messageEl.textContent = "กรุณาเปิดในแอปพลิเคชัน LINE";
+                    return;
+                }
+
+                statusEl.textContent = "พร้อมทดสอบ";
+                messageEl.textContent = "กดปุ่มด้านล่างเพื่อเริ่มการทดสอบ";
+                testBtn.disabled = false;
+
+            } catch (error) {
+                statusEl.textContent = "Initialization Failed";
+                messageEl.textContent = error.toString();
+            }
+
+            testBtn.addEventListener('click', async () => {
+                try {
+                    // เรียกใช้ฟังก์ชันที่ถูกต้อง
+                    const location = await liff.getGeolocation();
+                    const coords = location.coords;
+                    
+                    alert(`สำเร็จ!\n\nLatitude: ${coords.latitude}\nLongitude: ${coords.longitude}`);
+
+                } catch (error) {
+                    // แสดง Error Code ที่ได้รับโดยตรง
+                    alert(`ไม่สำเร็จ\n\nสาเหตุ: ${error.code}\nข้อความ: ${error.message}`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
